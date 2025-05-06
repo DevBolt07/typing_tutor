@@ -37,14 +37,4 @@ Time taken: 4.00 seconds
 Accuracy: 100.00%
 Words per minute (WPM): 72.00
 
-
-
-
----
-
-## 🛠️ How to Compile and Run
-
-### Windows (using GCC via MinGW):
-```bash
-gcc cmdtypist.c -o cmdtypist
-./cmdtypist
+![alt text](image.png)

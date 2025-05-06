@@ -6,6 +6,11 @@
 
 #define MAX_LINE 256
 
+// ANSI color codes
+#define COLOR_GREEN "\033[1;32m"
+#define COLOR_RED "\033[1;31m"
+#define COLOR_RESET "\033[0m"
+
 char *easyText[] = {
     "the cat sat on the mat",
     "typing is fun and easy",
@@ -26,20 +31,16 @@ char *hardText[] = {
 
 char *getTextByDifficulty(int level) {
     switch (level) {
-        case 1:
-            return easyText[rand() % 3];
-        case 2:
-            return mediumText[rand() % 3];
-        case 3:
-            return hardText[rand() % 3];
-        default:
-            return easyText[0];
+        case 1: return easyText[rand() % 3];
+        case 2: return mediumText[rand() % 3];
+        case 3: return hardText[rand() % 3];
+        default: return easyText[0];
     }
 }
 
 void showResults(const char *original, const char *typed, double timeTaken) {
     int correct = 0, total = strlen(original);
-    for (int i = 0; i < total; i++) {
+    for (int i = 0; i < total && typed[i] != '\0'; i++) {
         if (original[i] == typed[i])
             correct++;
     }
@@ -53,20 +54,36 @@ void showResults(const char *original, const char *typed, double timeTaken) {
 }
 
 void startTypingTest(int difficulty) {
-    char typed[MAX_LINE];
+    char typed[MAX_LINE] = {0};
     const char *text = getTextByDifficulty(difficulty);
 
     printf("\nType the following:\n%s\n\n", text);
-    printf("Your input: ");
+    printf("Start typing (character-by-character feedback):\n");
 
-    time_t start = time(NULL);
-    fgets(typed, MAX_LINE, stdin);
-    time_t end = time(NULL);
+    clock_t start = clock();
+    int i = 0;
+    while (text[i] != '\0') {
+        char ch = getch();
 
-    // Remove newline character
-    typed[strcspn(typed, "\n")] = 0;
+        if (ch == 13) { // Enter key
+            break;
+        }
 
-    double timeTaken = difftime(end, start);
+        typed[i] = ch;
+
+        if (ch == text[i]) {
+            printf(COLOR_GREEN "%c" COLOR_RESET, ch);  // Correct: green
+        } else {
+            printf(COLOR_RED "%c" COLOR_RESET, ch);    // Incorrect: red
+        }
+
+        i++;
+    }
+    clock_t end = clock();
+
+    double timeTaken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    typed[i] = '\0';
+
     showResults(text, typed, timeTaken);
 }
 
@@ -82,8 +99,13 @@ int main() {
         printf("3. Start Typing Test (Hard)\n");
         printf("4. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
-        getchar();  // Consume newline
+        
+        if (scanf("%d", &choice) != 1) {
+            while (getchar() != '\n'); // clear invalid input
+            printf("Invalid input. Try again.\n");
+            continue;
+        }
+        getchar(); // consume newline
 
         if (choice == 4) {
             printf("Goodbye!\n");
