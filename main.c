@@ -3,48 +3,56 @@
 #include <string.h>
 #include <time.h>
 #include <conio.h>  // For getch(), Windows only
+#include <windows.h>  // For Sleep()
 
 #define MAX_LINE 256
+#define MAX_LINES 100
 
 // ANSI color codes
 #define COLOR_GREEN "\033[1;32m"
 #define COLOR_RED "\033[1;31m"
 #define COLOR_RESET "\033[0m"
 
-char username[50];  // Global to use in file functions
+char username[50];  // Global username
 
-char *easyText[] = {
-    "the cat sat on the mat",
-    "typing is fun and easy",
-    "practice makes perfect",
-};
+// Reads a random line from a given file
+char* getRandomLineFromFile(const char* filename) {
+    static char lines[MAX_LINES][MAX_LINE];
+    int count = 0;
 
-char *mediumText[] = {
-    "programming in c is powerful",
-    "command line applications are fast",
-    "debugging helps improve skills",
-};
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening file: %s\n", filename);
+        return NULL;
+    }
 
-char *hardText[] = {
-    "multithreading and memory management require attention",
-    "system programming involves detailed understanding",
-    "low level coding is efficient but complex",
-};
+    while (fgets(lines[count], MAX_LINE, file) && count < MAX_LINES) {
+        lines[count][strcspn(lines[count], "\n")] = '\0';  // Remove newline
+        count++;
+    }
 
-char *getTextByDifficulty(int level) {
+    fclose(file);
+
+    if (count == 0) return NULL;
+
+    int index = rand() % count;
+    return lines[index];
+}
+
+char* getTextByDifficulty(int level) {
     switch (level) {
-        case 1: return easyText[rand() % 3];
-        case 2: return mediumText[rand() % 3];
-        case 3: return hardText[rand() % 3];
-        default: return easyText[0];
+        case 1: return getRandomLineFromFile("easy.txt");
+        case 2: return getRandomLineFromFile("medium.txt");
+        case 3: return getRandomLineFromFile("hard.txt");
+        default: return getRandomLineFromFile("easy.txt");
     }
 }
 
-void saveStatsToFile(const char *difficultyLabel, double timeTaken, double accuracy, double wpm) {
+void saveStatsToFile(const char* difficultyLabel, double timeTaken, double accuracy, double wpm) {
     char filename[100];
     snprintf(filename, sizeof(filename), "%s_stats.txt", username);
 
-    FILE *file = fopen(filename, "a");
+    FILE* file = fopen(filename, "a");
     if (file == NULL) {
         printf("Error saving stats.\n");
         return;
@@ -58,12 +66,13 @@ void saveStatsToFile(const char *difficultyLabel, double timeTaken, double accur
     fclose(file);
 }
 
-void showResults(const char *original, const char *typed, double timeTaken, int difficulty) {
+void showResults(const char* original, const char* typed, double timeTaken, int difficulty) {
     int correct = 0, total = strlen(original);
     for (int i = 0; i < total && typed[i] != '\0'; i++) {
         if (original[i] == typed[i])
             correct++;
     }
+
     double accuracy = ((double)correct / total) * 100;
     double wpm = ((double)strlen(typed) / 5) / (timeTaken / 60);
 
@@ -72,25 +81,40 @@ void showResults(const char *original, const char *typed, double timeTaken, int 
     printf("Accuracy: %.2f%%\n", accuracy);
     printf("Words per minute (WPM): %.2f\n", wpm);
 
-    const char *levelName = (difficulty == 1) ? "Easy" : (difficulty == 2) ? "Medium" : "Hard";
+    const char* levelName = (difficulty == 1) ? "Easy" : (difficulty == 2) ? "Medium" : "Hard";
     saveStatsToFile(levelName, timeTaken, accuracy, wpm);
+}
+
+void showCountdown(int seconds) {
+    printf("Get ready! Starting in:\n");
+    for (int i = seconds; i > 0; i--) {
+        printf("%d...\r", i);
+        fflush(stdout);
+        Sleep(1000);  // Sleep for 1000 milliseconds (1 second)
+    }
+    printf("Go!        \n\n");
 }
 
 void startTypingTest(int difficulty) {
     char typed[MAX_LINE] = {0};
-    const char *text = getTextByDifficulty(difficulty);
+    char* text = getTextByDifficulty(difficulty);
+
+    if (text == NULL) {
+        printf("Could not load typing text.\n");
+        return;
+    }
 
     printf("\nType the following:\n%s\n\n", text);
+    showCountdown(3);  // Countdown before typing
     printf("Start typing (real-time feedback):\n");
 
     clock_t start = clock();
     int i = 0;
-    while (text[i] != '\0') {
+
+    while (text[i] != '\0' && i < MAX_LINE - 1) {
         char ch = getch();
 
-        if (ch == 13) { // Enter key
-            break;
-        }
+        if (ch == 13) break;  // Enter key
 
         typed[i] = ch;
 
@@ -102,6 +126,7 @@ void startTypingTest(int difficulty) {
 
         i++;
     }
+
     clock_t end = clock();
 
     double timeTaken = ((double)(end - start)) / CLOCKS_PER_SEC;
@@ -115,10 +140,9 @@ int main() {
 
     srand(time(0));
 
-    // Login/Profile Setup
     printf("Enter your name: ");
     fgets(username, sizeof(username), stdin);
-    username[strcspn(username, "\n")] = 0;  // remove newline
+    username[strcspn(username, "\n")] = 0;  // Remove newline
 
     printf("Welcome, %s! Let's begin.\n", username);
 
@@ -131,11 +155,11 @@ int main() {
         printf("Enter your choice: ");
 
         if (scanf("%d", &choice) != 1) {
-            while (getchar() != '\n'); // clear invalid input
+            while (getchar() != '\n');  // Clear invalid input
             printf("Invalid input. Try again.\n");
             continue;
         }
-        getchar();  // consume newline
+        getchar();  // Clear newline
 
         if (choice == 4) {
             printf("Goodbye, %s! Your progress is saved in %s_stats.txt\n", username, username);
