@@ -66,14 +66,8 @@ void saveStatsToFile(const char* difficultyLabel, double timeTaken, double accur
     fclose(file);
 }
 
-void showResults(const char* original, const char* typed, double timeTaken, int difficulty) {
-    int correct = 0, total = strlen(original);
-    for (int i = 0; i < total && typed[i] != '\0'; i++) {
-        if (original[i] == typed[i])
-            correct++;
-    }
-
-    double accuracy = ((double)correct / total) * 100;
+// Updated function declaration to accept the accuracy parameter
+void showResults(const char* original, const char* typed, double timeTaken, int difficulty, double accuracy) {
     double wpm = ((double)strlen(typed) / 5) / (timeTaken / 60);
 
     printf("\n\n--- Results ---\n");
@@ -98,6 +92,8 @@ void showCountdown(int seconds) {
 void startTypingTest(int difficulty) {
     char typed[MAX_LINE] = {0};
     char* text = getTextByDifficulty(difficulty);
+    int totalKeystrokes = 0;  // Track total keystrokes including errors
+    int errorCount = 0;       // Track number of errors
 
     if (text == NULL) {
         printf("Could not load typing text.\n");
@@ -114,11 +110,16 @@ void startTypingTest(int difficulty) {
 
     while (text[i] != '\0' && typedIndex < MAX_LINE - 1) {
         char ch = getch();
-
+        
         // Start timing on first keystroke
         if (!firstKeyPressed) {
             start = clock();
             firstKeyPressed = 1;
+        }
+
+        // Count keystrokes (except backspace and enter)
+        if (ch != '\b' && ch != 13) {
+            totalKeystrokes++;
         }
 
         // Handle Backspace key
@@ -133,7 +134,7 @@ void startTypingTest(int difficulty) {
 
         if (ch == 13) break;  // Enter key
 
-        // Only accept correct character
+        // Only accept correct character but track incorrect ones
         if (ch == text[i]) {
             typed[typedIndex] = ch;
             printf(COLOR_GREEN "%c" COLOR_RESET, ch);
@@ -142,16 +143,23 @@ void startTypingTest(int difficulty) {
         } else {
             // Wrong character - show in red but don't advance
             printf(COLOR_RED "%c" COLOR_RESET "\b", ch);  // Show and delete with backspace
+            errorCount++;  // Count the error
         }
     }
 
     end = clock();  // Stop timer
     typed[typedIndex] = '\0';
     double timeTaken = ((double)(end - start)) / CLOCKS_PER_SEC;
-
-    showResults(text, typed, timeTaken, difficulty);
+    
+    // Calculate accuracy including errors
+    double accuracy = 100.0;
+    if (totalKeystrokes > 0) {  // Avoid division by zero
+        accuracy = 100.0 * (totalKeystrokes - errorCount) / totalKeystrokes;
+    }
+    
+    // Call showResults with the calculated accuracy
+    showResults(text, typed, timeTaken, difficulty, accuracy);
 }
-
 
 int main() {
     int choice;

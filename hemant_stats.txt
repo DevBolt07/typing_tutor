@@ -100,3 +100,24 @@ Difficulty: Easy | Time: 5.06s | Accuracy: 100.00% | WPM: 59.31
 Date: Wed May 07 15:45:57 2025
 Difficulty: Easy | Time: 6.40s | Accuracy: 100.00% | WPM: 48.75
 
+Date: Wed May 07 16:13:41 2025
+Difficulty: Easy | Time: 13.51s | Accuracy: 100.00% | WPM: 22.20
+
+Date: Wed May 07 16:14:13 2025
+Difficulty: Easy | Time: 15.99s | Accuracy: 100.00% | WPM: 18.76
+
+Date: Wed May 07 16:14:48 2025
+Difficulty: Easy | Time: 9.36s | Accuracy: 96.15% | WPM: 32.06
+
+Date: Wed May 07 16:15:03 2025
+Difficulty: Easy | Time: 5.91s | Accuracy: 100.00% | WPM: 44.69
+
+Date: Wed May 07 16:15:21 2025
+Difficulty: Easy | Time: 9.33s | Accuracy: 55.00% | WPM: 14.14
+
+Date: Wed May 07 16:20:20 2025
+Difficulty: Easy | Time: 8.00s | Accuracy: 100.00% | WPM: 37.49
+
+Date: Wed May 07 16:32:37 2025
+Difficulty: Easy | Time: 11.34s | Accuracy: 86.49% | WPM: 33.87
+
