@@ -2,7 +2,6 @@
 
 CMDTYPIST is a lightweight, console-based typing tutor application designed to help users improve their typing speed and accuracy through interactive typing tests with real-time feedback.
 
-![CMDTYPIST Screenshot](https://github.com/yourusername/cmdtypist/assets/screenshot.png)
 
 ## Features
 
