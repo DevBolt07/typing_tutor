@@ -105,18 +105,34 @@ void startTypingTest(int difficulty) {
     }
 
     printf("\nType the following:\n%s\n\n", text);
-    showCountdown(3);  // Countdown before typing
+    showCountdown(3);  // Visual countdown
     printf("Start typing (real-time feedback):\n");
 
-    clock_t start = clock();
-    int i = 0;
+    int i = 0, typedIndex = 0;
+    clock_t start = 0, end = 0;
+    int firstKeyPressed = 0;
 
-    while (text[i] != '\0' && i < MAX_LINE - 1) {
+    while (text[i] != '\0' && typedIndex < MAX_LINE - 1) {
         char ch = getch();
+
+        // Start timing on first keystroke
+        if (!firstKeyPressed) {
+            start = clock();
+            firstKeyPressed = 1;
+        }
+
+        // Handle Backspace key
+        if (ch == '\b') {
+            if (typedIndex > 0) {
+                typedIndex--;
+                printf("\b \b");
+            }
+            continue;
+        }
 
         if (ch == 13) break;  // Enter key
 
-        typed[i] = ch;
+        typed[typedIndex] = ch;
 
         if (ch == text[i]) {
             printf(COLOR_GREEN "%c" COLOR_RESET, ch);
@@ -124,16 +140,17 @@ void startTypingTest(int difficulty) {
             printf(COLOR_RED "%c" COLOR_RESET, ch);
         }
 
+        typedIndex++;
         i++;
     }
 
-    clock_t end = clock();
-
+    end = clock();  // Stop timer
+    typed[typedIndex] = '\0';
     double timeTaken = ((double)(end - start)) / CLOCKS_PER_SEC;
-    typed[i] = '\0';
 
     showResults(text, typed, timeTaken, difficulty);
 }
+
 
 int main() {
     int choice;
