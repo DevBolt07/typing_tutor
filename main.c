@@ -125,6 +125,7 @@ void startTypingTest(int difficulty) {
         if (ch == '\b') {
             if (typedIndex > 0) {
                 typedIndex--;
+                i--;  // Move back in the original text as well
                 printf("\b \b");
             }
             continue;
@@ -132,16 +133,16 @@ void startTypingTest(int difficulty) {
 
         if (ch == 13) break;  // Enter key
 
-        typed[typedIndex] = ch;
-
+        // Only accept correct character
         if (ch == text[i]) {
+            typed[typedIndex] = ch;
             printf(COLOR_GREEN "%c" COLOR_RESET, ch);
+            typedIndex++;
+            i++;
         } else {
-            printf(COLOR_RED "%c" COLOR_RESET, ch);
+            // Wrong character - show in red but don't advance
+            printf(COLOR_RED "%c" COLOR_RESET "\b", ch);  // Show and delete with backspace
         }
-
-        typedIndex++;
-        i++;
     }
 
     end = clock();  // Stop timer
