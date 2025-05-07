@@ -1,0 +1,10 @@
+programming in c is powerful and efficient
+command line applications are fast and flexible
+debugging helps improve your coding skills
+practice improves typing speed and accuracy
+always initialize your variables properly
+coding requires patience and attention to detail
+functions make code reusable and cleaner
+file handling is essential in many applications
+loops help reduce code duplication
+arrays are used to store multiple values

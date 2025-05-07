@@ -1,0 +1,10 @@
+multithreading and memory management require careful attention to avoid bugs
+system programming often involves low level interactions with hardware and memory
+optimizing algorithms for time and space complexity is a challenging task
+segmentation faults often occur due to invalid memory access in pointers
+understanding operating system concepts helps in writing efficient code
+race conditions can cause unpredictable behavior in concurrent programs
+managing dynamic memory using malloc and free is prone to errors
+stack and heap memory have different usage and lifetimes
+buffer overflows are common vulnerabilities in c programs
+secure coding practices help prevent software exploits and data leaks
